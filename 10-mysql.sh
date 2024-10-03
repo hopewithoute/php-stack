@@ -6,12 +6,12 @@ service mysql start
 systemctl enable mysql
 
 echo "Mysql Secure Installation"
-mysql --user=root <<_EOF_
-  ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';
-  DELETE FROM mysql.user WHERE User='';
-  DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
-  DROP DATABASE IF EXISTS test;
-  DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
-  FLUSH PRIVILEGES;
-_EOF_
+mysql_secure_installation
+echo "New User"
 
+mysql --user=root <<_EOF_
+  CREATE USER 'db'@'localhost' IDENTIFIED BY 'gas12kilo';
+  GRANT ALL PRIVILEGES ON *.* TO 'db'@'localhost' WITH GRANT OPTION;
+  FLUSH PRIVILEGES;
+  SELECT User, Host, plugin FROM mysql.user;
+_EOF_
