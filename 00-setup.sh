@@ -13,9 +13,10 @@ scripts=(
   "08-timezone.sh"
   "09-php.sh"
   "10-mysql.sh"
-  "11-aws.sh"
-  "12-gh.sh"
-  "13-backup.sh"
+  "11-redis.sh"
+  "12-aws.sh"
+  "13-gh.sh"
+  "14-backup.sh"
 )
 
 # Iterate over each script
