@@ -6,3 +6,4 @@ ufw default allow outgoing
 ufw allow 80
 ufw allow 443
 ufw allow 13666
+ufw status numbered

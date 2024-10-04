@@ -1,6 +1,7 @@
 #!/bin/bash
 export DEBIAN_FRONTEND=noninteractive
-
+# Update Package
+apt-get update && apt-get upgrade -y
 # Array of script names
 scripts=(
   "01-ssh.sh"
