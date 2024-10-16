@@ -15,9 +15,10 @@ install_php() {
   php$php_version-redis \
   php$php_version-mysql \
   php$php_version-mbstring \
+  php$php_version-bcmath \
   php$php_version-xml \
   php$php_version-zip \
-  php$php_version-intl
+  php$php_version-intl \
 
   echo "Copy Config PHP $php_version"
   cp -rf ./config/php/cli /etc/php/$php_version/
