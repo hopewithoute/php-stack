@@ -52,8 +52,9 @@ apt-get update
 echo "Select PHP version to install:"
 echo "1) PHP 8.2"
 echo "2) PHP 8.3"
-echo "3) Both PHP 8.2 and PHP 8.3"
-read -p "Enter choice [1, 2, or 3]: " choice
+echo "3) PHP 8.4"
+echo "4) All PHP versions (8.2, 8.3, 8.4)"
+read -p "Enter choice [1-4]: " choice
 
 case $choice in
   1)
@@ -63,8 +64,12 @@ case $choice in
     install_php "8.3"
     ;;
   3)
+    install_php "8.4"
+    ;;
+  4)
     install_php "8.2"
     install_php "8.3"
+    install_php "8.4"
     ;;
   *)
     echo "Invalid choice. Exiting."
