@@ -9,7 +9,7 @@ echo -e "              |______________________________|"
 echo -e " "
 
 # Basic variables
-mysqlpass="gas12kilo"
+mysqlpass="yourdbpassword"
 bucket="s3://backup-db-limawaktu"
 
 # Timestamp (sortable AND readable)
