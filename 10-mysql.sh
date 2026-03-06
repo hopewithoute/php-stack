@@ -10,7 +10,7 @@ mysql_secure_installation
 echo "New User"
 
 mysql --user=root <<_EOF_
-  CREATE USER 'db'@'localhost' IDENTIFIED BY 'gas12kilo';
+  CREATE USER 'db'@'localhost' IDENTIFIED BY 'yourpassword';
   GRANT ALL PRIVILEGES ON *.* TO 'db'@'localhost' WITH GRANT OPTION;
   FLUSH PRIVILEGES;
   SELECT User, Host, plugin FROM mysql.user;
