@@ -78,15 +78,17 @@ APT_UPDATED_FILE="/tmp/.php-stack-apt-updated"
 apt_update_once() {
     if [[ ! -f "$APT_UPDATED_FILE" ]]; then
         log_info "Running apt-get update..."
-        apt-get update -qq
-        touch "$APT_UPDATED_FILE"
+        if apt-get update -qq; then
+            touch "$APT_UPDATED_FILE"
+        else
+            log_error "apt-get update failed"
+            return 1
+        fi
     fi
 }
 
 # Install package if not installed
 apt_install() {
-    local package="$1"
-    shift
     local packages=("$@")
     
     apt_update_once
