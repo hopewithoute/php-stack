@@ -1,0 +1,30 @@
+# PHP Stack Test Images
+# Build: docker build -f docker/Dockerfile.test --target test-2204 -t php-stack-test:22.04 .
+# Build: docker build -f docker/Dockerfile.test --target test-2404 -t php-stack-test:24.04 .
+
+# Ubuntu 22.04 Test
+FROM ubuntu:22.04 AS test-2204
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    lsb-release \
+    && rm -rf /var/lib/apt/lists/*
+COPY . /php-stack
+WORKDIR /php-stack
+RUN chmod +x ./00-setup.sh && ./00-setup.sh --non-interactive || true
+
+# Ubuntu 24.04 Test
+FROM ubuntu:24.04 AS test-2404
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    lsb-release \
+    && rm -rf /var/lib/apt/lists/*
+COPY . /php-stack
+WORKDIR /php-stack
+RUN chmod +x ./00-setup.sh && ./00-setup.sh --non-interactive || true
+
