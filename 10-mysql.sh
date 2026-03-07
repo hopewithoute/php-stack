@@ -23,16 +23,20 @@ idempotent_copy "$SCRIPT_DIR/config/mysql" "/etc/"
 # Start and enable MySQL service
 if ! is_service_active mysql; then
     log_info "Starting MySQL service..."
-    service mysql start
+    service mysql start 2>/dev/null || log_warn "Could not start MySQL via service command"
 else
     log_info "MySQL service already running"
 fi
 
-if ! is_service_enabled mysql; then
-    log_info "Enabling MySQL service..."
-    systemctl enable mysql
+if has_systemctl; then
+    if ! is_service_enabled mysql; then
+        log_info "Enabling MySQL service..."
+        systemctl enable mysql
+    else
+        log_info "MySQL service already enabled"
+    fi
 else
-    log_info "MySQL service already enabled"
+    log_info "systemctl not available, skipping service enable (non-systemd system)"
 fi
 
 # Check if user 'db' already exists

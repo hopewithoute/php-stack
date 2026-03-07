@@ -11,17 +11,27 @@ log_info "Configuring SSH..."
 current_port=$(grep -E "^Port " /etc/ssh/sshd_config 2>/dev/null | awk '{print $2}' || echo "")
 current_password_auth=$(grep -E "^PasswordAuthentication " /etc/ssh/sshd_config 2>/dev/null | awk '{print $2}' || echo "")
 
-# Disable socket and enable service
-if systemctl is-active --quiet ssh.socket 2>/dev/null; then
-    log_info "Disabling ssh.socket..."
-    systemctl disable --now ssh.socket
+# Check if systemctl is available (for systemd vs non-systemd systems like WSL2)
+HAS_SYSTEMCTL=false
+if command_exists systemctl; then
+    HAS_SYSTEMCTL=true
 fi
 
-if ! systemctl is-enabled --quiet ssh.service 2>/dev/null; then
-    log_info "Enabling ssh.service..."
-    systemctl enable --now ssh.service
+# Disable socket and enable service (systemd only)
+if [[ "$HAS_SYSTEMCTL" == true ]]; then
+    if systemctl is-active --quiet ssh.socket 2>/dev/null; then
+        log_info "Disabling ssh.socket..."
+        systemctl disable --now ssh.socket
+    fi
+
+    if ! systemctl is-enabled --quiet ssh.service 2>/dev/null; then
+        log_info "Enabling ssh.service..."
+        systemctl enable --now ssh.service
+    else
+        log_info "ssh.service already enabled"
+    fi
 else
-    log_info "ssh.service already enabled"
+    log_info "systemctl not available, skipping service enable (non-systemd system)"
 fi
 
 # Configure port
@@ -48,8 +58,12 @@ else
     log_info "Password authentication already disabled"
 fi
 
-# Restart SSH if config changed
+# Restart SSH service
 log_info "Restarting SSH service..."
-systemctl restart sshd
+if [[ "$HAS_SYSTEMCTL" == true ]]; then
+    systemctl restart sshd
+else
+    service ssh restart 2>/dev/null || service sshd restart 2>/dev/null || log_warn "Could not restart SSH service"
+fi
 
 log_info "SSH configuration complete"

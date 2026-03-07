@@ -59,12 +59,16 @@ else
     log_info "DH parameters already exist"
 fi
 
-# Enable nginx service
-if ! is_service_enabled nginx; then
-    log_info "Enabling Nginx service..."
-    systemctl enable nginx
+# Enable nginx service (only on systemd systems)
+if has_systemctl; then
+    if ! is_service_enabled nginx; then
+        log_info "Enabling Nginx service..."
+        systemctl enable nginx
+    else
+        log_info "Nginx service already enabled"
+    fi
 else
-    log_info "Nginx service already enabled"
+    log_info "systemctl not available, skipping service enable (non-systemd system)"
 fi
 
 log_info "Nginx configuration complete"

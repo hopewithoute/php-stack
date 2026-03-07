@@ -16,19 +16,23 @@ else
     log_info "Tuned already installed"
 fi
 
-# Enable and start tuned service
-if ! is_service_enabled tuned; then
-    log_info "Enabling tuned service..."
-    systemctl enable tuned
-else
-    log_info "Tuned service already enabled"
-fi
+# Enable and start tuned service (only on systemd systems)
+if has_systemctl; then
+    if ! is_service_enabled tuned; then
+        log_info "Enabling tuned service..."
+        systemctl enable tuned
+    else
+        log_info "Tuned service already enabled"
+    fi
 
-if ! is_service_active tuned; then
-    log_info "Starting tuned service..."
-    systemctl start tuned
+    if ! is_service_active tuned; then
+        log_info "Starting tuned service..."
+        systemctl start tuned
+    else
+        log_info "Tuned service already running"
+    fi
 else
-    log_info "Tuned service already running"
+    log_info "systemctl not available, skipping service management (non-systemd system)"
 fi
 
 log_info "Tuned configuration complete"

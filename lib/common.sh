@@ -48,14 +48,40 @@ is_installed() {
     dpkg -l "$1" 2> /dev/null | grep -q "^ii"
 }
 
-# Check if service is active
-is_service_active() {
-    systemctl is-active --quiet "$1" 2> /dev/null
+# Check if systemctl is available (systemd vs non-systemd like WSL2)
+has_systemctl() {
+    command_exists systemctl
 }
 
-# Check if service is enabled
+# Check if service is active (systemd and non-systemd compatible)
+is_service_active() {
+    if has_systemctl; then
+        systemctl is-active --quiet "$1" 2> /dev/null
+    else
+        # Fallback for non-systemd systems
+        service "$1" status > /dev/null 2>&1
+    fi
+}
+
+# Check if service is enabled (systemd and non-systemd compatible)
 is_service_enabled() {
-    systemctl is-enabled --quiet "$1" 2> /dev/null
+    if has_systemctl; then
+        systemctl is-enabled --quiet "$1" 2> /dev/null
+    else
+        # Non-systemd systems don't have "enabled" concept the same way
+        # Check if init script exists
+        [[ -f "/etc/init.d/$1" ]]
+    fi
+}
+
+# Restart a service (systemd and non-systemd compatible)
+restart_service() {
+    local service="$1"
+    if has_systemctl; then
+        systemctl restart "$service"
+    else
+        service "$service" restart 2>/dev/null || log_warn "Could not restart $service via service command"
+    fi
 }
 
 # Run command with error handling

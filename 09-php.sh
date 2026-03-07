@@ -47,18 +47,22 @@ install_php() {
         sed -i "s|listen = /run/php/php.*-fpm.sock|listen = /run/php/php$php_version-fpm.sock|g" "$www_conf"
     fi
 
-    # Enable and start PHP-FPM
-    if ! is_service_enabled "php$php_version-fpm"; then
-        log_info "Enabling PHP $php_version FPM..."
-        systemctl enable "php$php_version-fpm"
-    fi
-    
-    if ! is_service_active "php$php_version-fpm"; then
-        log_info "Starting PHP $php_version FPM..."
-        systemctl start "php$php_version-fpm"
+    # Enable and start PHP-FPM (only on systemd systems)
+    if has_systemctl; then
+        if ! is_service_enabled "php$php_version-fpm"; then
+            log_info "Enabling PHP $php_version FPM..."
+            systemctl enable "php$php_version-fpm"
+        fi
+        
+        if ! is_service_active "php$php_version-fpm"; then
+            log_info "Starting PHP $php_version FPM..."
+            systemctl start "php$php_version-fpm"
+        else
+            log_info "Restarting PHP $php_version FPM..."
+            systemctl restart "php$php_version-fpm"
+        fi
     else
-        log_info "Restarting PHP $php_version FPM..."
-        systemctl restart "php$php_version-fpm"
+        log_info "systemctl not available, skipping FPM service management (non-systemd system)"
     fi
 }
 
