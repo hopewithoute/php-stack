@@ -48,9 +48,9 @@ is_installed() {
     dpkg -l "$1" 2> /dev/null | grep -q "^ii"
 }
 
-# Check if systemctl is available (systemd vs non-systemd like WSL2)
+# Check if systemctl is available AND systemd is running (for WSL2 compatibility)
 has_systemctl() {
-    command_exists systemctl
+    command_exists systemctl && systemctl is-system-running &>/dev/null
 }
 
 # Check if service is active (systemd and non-systemd compatible)
